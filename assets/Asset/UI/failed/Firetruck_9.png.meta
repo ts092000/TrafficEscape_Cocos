@@ -1,0 +1,134 @@
+{
+  "ver": "1.0.25",
+  "importer": "image",
+  "imported": true,
+  "uuid": "10701e64-42f3-4a30-900c-c4c688d7b461",
+  "files": [
+    ".json",
+    ".png"
+  ],
+  "subMetas": {
+    "6c48a": {
+      "importer": "texture",
+      "uuid": "10701e64-42f3-4a30-900c-c4c688d7b461@6c48a",
+      "displayName": "Firetruck_9",
+      "id": "6c48a",
+      "name": "texture",
+      "userData": {
+        "wrapModeS": "clamp-to-edge",
+        "wrapModeT": "clamp-to-edge",
+        "imageUuidOrDatabaseUri": "10701e64-42f3-4a30-900c-c4c688d7b461",
+        "isUuid": true,
+        "visible": false,
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f9941": {
+      "importer": "sprite-frame",
+      "uuid": "10701e64-42f3-4a30-900c-c4c688d7b461@f9941",
+      "displayName": "Firetruck_9",
+      "id": "f9941",
+      "name": "spriteFrame",
+      "userData": {
+        "trimType": "auto",
+        "trimThreshold": 1,
+        "rotated": false,
+        "offsetX": 0,
+        "offsetY": 0,
+        "trimX": 1,
+        "trimY": 1,
+        "width": 457,
+        "height": 372,
+        "rawWidth": 459,
+        "rawHeight": 374,
+        "borderTop": 0,
+        "borderBottom": 0,
+        "borderLeft": 0,
+        "borderRight": 0,
+        "packable": true,
+        "pixelsToUnit": 100,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "meshType": 0,
+        "vertices": {
+          "rawPosition": [
+            -228.5,
+            -186,
+            0,
+            228.5,
+            -186,
+            0,
+            -228.5,
+            186,
+            0,
+            228.5,
+            186,
+            0
+          ],
+          "indexes": [
+            0,
+            1,
+            2,
+            2,
+            1,
+            3
+          ],
+          "uv": [
+            1,
+            373,
+            458,
+            373,
+            1,
+            1,
+            458,
+            1
+          ],
+          "nuv": [
+            0.002178649237472767,
+            0.00267379679144385,
+            0.9978213507625272,
+            0.00267379679144385,
+            0.002178649237472767,
+            0.9973262032085561,
+            0.9978213507625272,
+            0.9973262032085561
+          ],
+          "minPos": [
+            -228.5,
+            -186,
+            0
+          ],
+          "maxPos": [
+            228.5,
+            186,
+            0
+          ]
+        },
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "10701e64-42f3-4a30-900c-c4c688d7b461@6c48a",
+        "atlasUuid": ""
+      },
+      "ver": "1.0.12",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "type": "sprite-frame",
+    "fixAlphaTransparencyArtifacts": true,
+    "hasAlpha": true,
+    "redirect": "10701e64-42f3-4a30-900c-c4c688d7b461@f9941"
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "ver": "1.0.25",
+  "importer": "image",
+  "imported": true,
+  "uuid": "7c06f805-5284-470c-aa29-bcc6e07545ee",
+  "files": [
+    ".json",
+    ".png"
+  ],
+  "subMetas": {
+    "6c48a": {
+      "importer": "texture",
+      "uuid": "7c06f805-5284-470c-aa29-bcc6e07545ee@6c48a",
+      "displayName": "car_police_9",
+      "id": "6c48a",
+      "name": "texture",
+      "userData": {
+        "wrapModeS": "clamp-to-edge",
+        "wrapModeT": "clamp-to-edge",
+        "imageUuidOrDatabaseUri": "7c06f805-5284-470c-aa29-bcc6e07545ee",
+        "isUuid": true,
+        "visible": false,
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f9941": {
+      "importer": "sprite-frame",
+      "uuid": "7c06f805-5284-470c-aa29-bcc6e07545ee@f9941",
+      "displayName": "car_police_9",
+      "id": "f9941",
+      "name": "spriteFrame",
+      "userData": {
+        "trimType": "auto",
+        "trimThreshold": 1,
+        "rotated": false,
+        "offsetX": -3,
+        "offsetY": 17,
+        "trimX": 13,
+        "trimY": 6,
+        "width": 821,
+        "height": 742,
+        "rawWidth": 853,
+        "rawHeight": 788,
+        "borderTop": 0,
+        "borderBottom": 0,
+        "borderLeft": 0,
+        "borderRight": 0,
+        "packable": true,
+        "pixelsToUnit": 100,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "meshType": 0,
+        "vertices": {
+          "rawPosition": [
+            -410.5,
+            -371,
+            0,
+            410.5,
+            -371,
+            0,
+            -410.5,
+            371,
+            0,
+            410.5,
+            371,
+            0
+          ],
+          "indexes": [
+            0,
+            1,
+            2,
+            2,
+            1,
+            3
+          ],
+          "uv": [
+            13,
+            782,
+            834,
+            782,
+            13,
+            40,
+            834,
+            40
+          ],
+          "nuv": [
+            0.015240328253223915,
+            0.050761421319796954,
+            0.977725674091442,
+            0.050761421319796954,
+            0.015240328253223915,
+            0.9923857868020305,
+            0.977725674091442,
+            0.9923857868020305
+          ],
+          "minPos": [
+            -410.5,
+            -371,
+            0
+          ],
+          "maxPos": [
+            410.5,
+            371,
+            0
+          ]
+        },
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "7c06f805-5284-470c-aa29-bcc6e07545ee@6c48a",
+        "atlasUuid": ""
+      },
+      "ver": "1.0.12",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "type": "sprite-frame",
+    "fixAlphaTransparencyArtifacts": true,
+    "hasAlpha": true,
+    "redirect": "7c06f805-5284-470c-aa29-bcc6e07545ee@f9941"
+  }
+}
