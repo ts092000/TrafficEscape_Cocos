@@ -1,0 +1,28 @@
+
+{
+    "levelId": 1,
+    "gridSizeX": 6,
+    "gridSizeY": 6,
+    "vehicles": [
+        {
+            "type": "car",
+            "startX": 1,
+            "startY": 2,
+            "direction": "right",
+            "length": 2
+        },
+        {
+            "type": "car",
+            "startX": 3,
+            "startY": 0,
+            "direction": "down",
+            "length": 28
+        }
+    ],
+    "exitPoints": [
+        {"x": 5, "y": 2, "direction": "right"}
+    ],
+    "pedestrians": [
+        {"startX": 0, "startY": 3, "path": [[0,3], [1,3], [2,3]]}
+    ]
+}
