@@ -4,7 +4,7 @@ const { ccclass, property } = _decorator;
 @ccclass('GameManager')
 export class GameManager extends Component {
     public static instance: GameManager | null = null; // Singleton pattern
-    public static time: number = 30;
+    public static time: number = 5;
     public static timeCdCallback: any;
 
     @property(Node) // Reference to the level clear/game over UI panel
@@ -29,11 +29,12 @@ export class GameManager extends Component {
             return;
         }
         GameManager.instance = this;
+        GameManager.time = 5;
+        this.timeCd();
         // director.addPersistRootNode(this.node); // Optional: if you want it to persist between scenes
     }
 
     start() {
-        this.timeCd();
         if (this.endLevelPanel) {
             this.endLevelPanel.active = false; // Hide panel initially
         }
@@ -58,7 +59,11 @@ export class GameManager extends Component {
 
     public resetGame() {
         console.log("GameManager: Restarting Current Level!");
-        director.loadScene(director.getScene().name); // Reload current scene
+        GameManager.time = 5;
+        this.timeCd();
+        this.endLevelMessageLabel.node.active = true;
+        this.endLevelPanel.active = false;
+        director.preloadScene(director.getScene().name); // Reload current scene
     }
 
     public gameOver(): void {
@@ -71,17 +76,18 @@ export class GameManager extends Component {
     }
     
     public timeCd(): void {
+        GameManager.time = 5;
         GameManager.timeCdCallback = function () {
             this.timeLabel.string = `${GameManager.time}`;
             if (GameManager.time === 0) {
                 // Cancel this timer at the sixth call-back
+                GameManager.time = 5;
                 this.unschedule(GameManager.timeCdCallback);
                 this.gameOver();
             }
             GameManager.time--;
         }
         this.schedule(GameManager.timeCdCallback, 1);
-        console.log(GameManager.time)
     }
 }
 
