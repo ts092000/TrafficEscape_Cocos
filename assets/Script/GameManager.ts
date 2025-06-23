@@ -4,12 +4,23 @@ const { ccclass, property } = _decorator;
 @ccclass('GameManager')
 export class GameManager extends Component {
     public static instance: GameManager | null = null; // Singleton pattern
+    public static time: number = 30;
+    public static timeCdCallback: any;
 
     @property(Node) // Reference to the level clear/game over UI panel
     public endLevelPanel: Node | null = null;
 
     @property(Label) // Optional: message for level clear
     public endLevelMessageLabel: Label | null = null;
+
+    @property(Label) // Optional: message for level clear
+    public timeLabel: Label | null = null;
+
+    @property(Node) // Optional: message for level clear
+    public winNode: Node | null = null;
+
+    @property(Node) // Optional: message for level clear
+    public loseNode: Node | null = null;
 
     onLoad() {
         // Implement simple singleton
@@ -22,6 +33,7 @@ export class GameManager extends Component {
     }
 
     start() {
+        this.timeCd();
         if (this.endLevelPanel) {
             this.endLevelPanel.active = false; // Hide panel initially
         }
@@ -33,6 +45,8 @@ export class GameManager extends Component {
 
     public levelCleared() {
         console.log("GameManager: Level Cleared!");
+        this.winNode.active = true;
+        this.loseNode.active = false;
         if (this.endLevelPanel) {
             this.endLevelPanel.active = true; // Show panel
         }
@@ -45,6 +59,29 @@ export class GameManager extends Component {
     public resetGame() {
         console.log("GameManager: Restarting Current Level!");
         director.loadScene(director.getScene().name); // Reload current scene
+    }
+
+    public gameOver(): void {
+        if (this.endLevelPanel) {
+            this.endLevelPanel.active = true; // Show panel
+        }
+        this.winNode.active = false;
+        this.loseNode.active = true;
+        this.endLevelMessageLabel.string = "Game Over, please try again!";
+    }
+    
+    public timeCd(): void {
+        GameManager.timeCdCallback = function () {
+            this.timeLabel.string = `${GameManager.time}`;
+            if (GameManager.time === 0) {
+                // Cancel this timer at the sixth call-back
+                this.unschedule(GameManager.timeCdCallback);
+                this.gameOver();
+            }
+            GameManager.time--;
+        }
+        this.schedule(GameManager.timeCdCallback, 1);
+        console.log(GameManager.time)
     }
 }
 
