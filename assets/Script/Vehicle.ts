@@ -26,32 +26,57 @@ export class Vehicle extends Component {
         // Điều chỉnh lại path nếu cấu trúc hierarchy khác
     }
 
-    public init(startX: number, startY: number, direction: Direction, length: number, cellSize: number) {
+    // Đảm bảo hàm init có tham số manager: GameManager
+    public init(startX: number, startY: number, direction: Direction, length: number, cellSize: number, manager: GameManager) {
         this.gridX = startX;
         this.gridY = startY;
         this.direction = direction;
         this.length = length;
+        this.gameManager = manager; // Dòng này quan trọng
 
-        // Đặt kích thước cho sprite của xe
-        // Ví dụ: Xe ngang (width = length * cellSize, height = cellSize)
-        // Xe dọc (width = cellSize, height = length * cellSize)
-        const uiTransform = this.getComponent(UITransform);
-        if (uiTransform) {
-            if (this.direction === Direction.LEFT || this.direction === Direction.RIGHT) {
-                uiTransform.setContentSize(this.length * cellSize, cellSize);
-                this.sprite.node.angle = 0; // Đặt góc quay cho sprite nếu cần (xe ngang)
-            } else if (this.direction === Direction.UP) {
-                uiTransform.setContentSize(this.length * cellSize, cellSize);
-                this.sprite.node.angle = 90; // Đặt góc quay cho sprite nếu cần (xe dọc)
-            } else {
-                uiTransform.setContentSize(this.length * cellSize, cellSize);
-                this.sprite.node.angle = -90; // Đặt góc quay cho sprite nếu cần (xe dọc)
-            }
+        if (!this.gameManager) {
+            console.error("[Vehicle] GameManager is null in Vehicle init! Cannot get GameBoardNode UITransform.");
+            return;
         }
 
-        // Đặt vị trí ban đầu của xe trên Scene dựa trên tọa độ grid
-        this.snapToGrid(cellSize, this.gameManager.gameBoardNode.getComponent(UITransform).width, this.gameManager.gameBoardNode.getComponent(UITransform).height);
+        const uiTransform = this.getComponent(UITransform);
+        if (uiTransform) {
+            // ... (logic setContentSize và angle của xe)
+            if (this.direction === Direction.LEFT || this.direction === Direction.RIGHT) {
+                uiTransform.setContentSize(this.length * cellSize, cellSize);
+                this.sprite.node.angle = 0; 
+                if (this.direction === Direction.LEFT) this.sprite.node.scale = new Vec3(-1, 1, 1); 
+                else this.sprite.node.scale = new Vec3(1, 1, 1); 
+            } else { 
+                uiTransform.setContentSize(this.length * cellSize, cellSize);
+                this.sprite.node.angle = -90; 
+                if (this.direction === Direction.UP) {
+                    this.sprite.node.scale = new Vec3(-1, 1, 1); 
+                }
+                else {
+                    this.sprite.node.scale = new Vec3(1, 1, 1); 
+                }
+                // Cần điều chỉnh scale cho UP/DOWN nếu sprite gốc là ngang
+                // Ví dụ: if (this.direction === Direction.UP) { this.sprite.node.scale = new Vec3(1, -1, 1); }
+            }
+        } else {
+             console.error("[Vehicle] UITransform component not found on vehicle node!");
+             return;
+        }
+        
+        // Lấy kích thước gameBoardNode TẠI THỜI ĐIỂM NÀY, sau khi đã được setContentSize trong GameManager
+        const boardUITransform = this.gameManager.gameBoardNode.getComponent(UITransform);
+        if (!boardUITransform) {
+            console.error("[Vehicle] GameBoardNode does not have a UITransform component when initializing vehicle!");
+            return;
+        }
+        const boardWidth = boardUITransform.width;
+        const boardHeight = boardUITransform.height;
+
+        this.node.setPosition(this.getLocalPositionFromGrid(startX, startY, cellSize, boardWidth, boardHeight));
         this.initialPosition.set(this.node.position);
+
+        console.log(`[Vehicle] Initialized ${this.node.name} at Grid(${startX}, ${startY}), Local Pos: (${this.node.position.x.toFixed(2)}, ${this.node.position.y.toFixed(2)})`);
     }
 
     // Chuyển đổi tọa độ grid sang tọa độ thế giới (local của parent node)
