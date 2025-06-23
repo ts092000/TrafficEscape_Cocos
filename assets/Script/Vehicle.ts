@@ -56,7 +56,9 @@ export class Vehicle extends Component {
 
     // Chuyển đổi tọa độ grid sang tọa độ thế giới (local của parent node)
     public getLocalPositionFromGrid(gridX: number, gridY: number, cellSize: number, boardWidth: number, boardHeight: number): Vec3 {
-        // Tính toán vị trí trung tâm của ô grid đầu tiên mà xe chiếm
+        // Tính vị trí cục bộ của tâm ô lưới trong không gian của gameBoardNode.
+        // boardWidth/2 và boardHeight/2 là offset từ tâm gameBoardNode đến góc dưới bên trái của nó.
+        // (cellSize / 2) là offset để đặt tâm xe vào giữa ô lưới.
         const posX = gridX * cellSize - (boardWidth / 2) + (cellSize / 2);
         const posY = gridY * cellSize - (boardHeight / 2) + (cellSize / 2);
         return new Vec3(posX, posY);
