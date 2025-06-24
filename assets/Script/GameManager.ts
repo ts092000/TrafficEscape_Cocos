@@ -6,7 +6,7 @@ const { ccclass, property } = _decorator;
 @ccclass('GameManager')
 export class GameManager extends Component {
     public static instance: GameManager | null = null; // Singleton pattern
-    public static time: number = 60;
+    public static time: number = 30;
     public static timeCdCallback: any;
 
     @property(Node) // Reference to the level clear/game over UI panel
@@ -44,7 +44,7 @@ export class GameManager extends Component {
     private movesCount: number = 0;
 
     // Kích thước của mỗi ô trong grid (ví dụ 64x64 pixel)
-    private readonly GRID_CELL_SIZE: number = 64; 
+    private readonly GRID_CELL_SIZE: number = 90; 
 
     // Grid ảo để quản lý vị trí xe
     private grid: Node[][] = []; 
@@ -67,7 +67,7 @@ export class GameManager extends Component {
             return;
         }
         GameManager.instance = this;
-        GameManager.time = 60;
+        GameManager.time = 30;
         this.timeCd();
         input.on(Input.EventType.TOUCH_START, this.onTouchStart, this);
         this.gameBoardNode.getComponent(UITransform).setContentSize(new Size(0,0));
@@ -91,12 +91,14 @@ export class GameManager extends Component {
 
     private async loadLevel(index: number): Promise<void> {
         this.currentLevelData = this.getMockLevelData(index); // Dữ liệu giả lập
+        console.log(`[GameManager Debug] GameBoardNode World Position: X=<span class="math-inline">\{this\.gameBoardNode\.worldPosition\.x\.toFixed\(2\)\}, Y\=</span>{this.gameBoardNode.worldPosition.y.toFixed(2)}`);
         if (!this.currentLevelData) {
             console.warn("No more levels or level data not found!");
             return;
         }
 
         // Reset game board
+        console.log('...: ', this.gameBoardNode.worldPosition);
         this.gameBoardNode.removeAllChildren();
         this.vehicles = [];
         this.movesCount = 0;
@@ -124,7 +126,7 @@ export class GameManager extends Component {
 
         // Khởi tạo grid trống (chỉ một lần duy nhất tại đây)
         this.grid = Array(this.gridSizeY).fill(0).map(() => Array(this.gridSizeX).fill(null));
-        console.log(`[GameManager] Grid initialized with size: ${this.grid.length} rows, ${this.grid[0]?.length} cols`);
+        console.log(`[GameManager] Grid initialized with size: ${this.grid.length} rows (Y), ${this.grid[0]?.length} cols (X)`);
 
 
         // Khởi tạo các xe
@@ -157,7 +159,7 @@ export class GameManager extends Component {
 
     // Đặt xe vào grid và đánh dấu các ô xe chiếm
     private placeVehicleOnGrid(vehicle: Vehicle, x: number, y: number) {
-        // Xóa vị trí cũ trên grid trước khi đặt vị trí mới (đảm bảo không có dư thừa)
+        // Xóa vị trí cũ (nếu có) - logic này có thể được tối ưu hóa hơn, nhưng vẫn đúng
         for (let r = 0; r < this.gridSizeY; r++) {
             for (let c = 0; c < this.gridSizeX; c++) {
                 if (this.grid[r][c] === vehicle.node) {
@@ -171,19 +173,20 @@ export class GameManager extends Component {
             let cellY = y;
             if (vehicle.direction === Direction.RIGHT) {
                 cellX += i;
-            } else if (vehicle.direction === Direction.LEFT) { // Hướng LEFT
+            } else if (vehicle.direction === Direction.LEFT) {
                 cellX -= i;
-            } else if (vehicle.direction === Direction.UP) { // Hướng UP: Y tăng
+            } else if (vehicle.direction === Direction.UP) { // Y tăng khi đi lên
                 cellY += i; 
-            } else if (vehicle.direction === Direction.DOWN) { // Hướng DOWN: Y giảm
+            } else if (vehicle.direction === Direction.DOWN) { // Y giảm khi đi xuống
                 cellY -= i;
             }
 
+            // Truy cập grid theo [cellY][cellX]
             if (cellX >= 0 && cellX < this.gridSizeX && cellY >= 0 && cellY < this.gridSizeY) {
-                this.grid[cellY][cellX] = vehicle.node; // Lưu node của xe tại vị trí đó
-                console.log(`[GameManager] Placed ${vehicle.node.name} at grid[${cellY}][${cellX}] (part ${i})`);
+                this.grid[cellY][cellX] = vehicle.node; 
+                console.log(`[GameManager] Placed ${vehicle.node.name} at grid[Y:${cellY}][X:${cellX}] (part ${i})`);
             } else {
-                console.warn(`[GameManager] Initial vehicle placement out of grid bounds for ${vehicle.node.name} at (${cellX}, ${cellY})`);
+                console.warn(`[GameManager] Initial vehicle placement out of grid bounds for ${vehicle.node.name} at (X:${cellX}, Y:${cellY})`);
             }
         }
     }
@@ -204,8 +207,9 @@ export class GameManager extends Component {
                 cellY -= i;
             }
 
+            // Truy cập grid theo [cellY][cellX]
             if (cellX >= 0 && cellX < this.gridSizeX && cellY >= 0 && cellY < this.gridSizeY) {
-                if (this.grid[cellY][cellX] === vehicle.node) { // Chỉ xóa nếu đúng là xe đó
+                if (this.grid[cellY][cellX] === vehicle.node) {
                     this.grid[cellY][cellX] = null;
                 }
             }
@@ -225,6 +229,7 @@ export class GameManager extends Component {
                 cellY -= i;
             }
 
+            // Truy cập grid theo [cellY][cellX]
             if (cellX >= 0 && cellX < this.gridSizeX && cellY >= 0 && cellY < this.gridSizeY) {
                 this.grid[cellY][cellX] = vehicle.node;
             }
@@ -242,18 +247,19 @@ export class GameManager extends Component {
             } else if (vehicle.direction === Direction.LEFT) {
                 checkX -= i;
             } else if (vehicle.direction === Direction.UP) {
-                checkY += i; // UP là Y tăng
+                checkY += i; 
             } else if (vehicle.direction === Direction.DOWN) {
-                checkY -= i; // DOWN là Y giảm
+                checkY -= i;
             }
 
             if (checkX < 0 || checkX >= this.gridSizeX || checkY < 0 || checkY >= this.gridSizeY) {
-                continue; // Vị trí này nằm ngoài grid, coi như trống
+                continue; // Vị trí này nằm ngoài grid
             }
 
+            // Truy cập grid theo [checkY][checkX]
             const cellOccupant = this.grid[checkY][checkX];
             if (cellOccupant && cellOccupant !== vehicle.node) {
-                return false; // Ô này bị chiếm bởi xe khác: va chạm!
+                return false; // Ô này bị chiếm bởi xe khác
             }
         }
         return true; 
@@ -267,11 +273,26 @@ export class GameManager extends Component {
             return { gridX: -1, gridY: -1 }; 
         }
 
+        // DEBUG QUAN TRỌNG: In ra kích thước và vị trí của gameBoardNode ngay trước khi chuyển đổi
+        console.log(`[convertWorldToGrid Debug] GameBoardNode's Current UITransform Size: W=${boardUITransform.width.toFixed(2)}, H=${boardUITransform.height.toFixed(2)}`);
+        console.log(`[convertWorldToGrid Debug] GameBoardNode's Current World Position: X=${this.gameBoardNode.worldPosition.x.toFixed(2)}, Y=${this.gameBoardNode.worldPosition.y.toFixed(2)}`);
+
+
+        // Chuyển đổi tọa độ thế giới (touchLocation) sang tọa độ cục bộ của gameBoardNode.
+        // Điều này đưa điểm chạm về không gian tương đối với gốc của gameBoardNode.
+        // Vì gameBoardNode có Anchor Point là (0.5, 0.5), localPos.x/y sẽ là từ tâm của gameBoardNode.
         const localPos = boardUITransform.convertToNodeSpaceAR(new Vec3(worldPos.x, worldPos.y, 0));
+
+        console.log(`[convertWorldToGrid Debug] Local Pos (relative to GameBoardNode center): X=${localPos.x.toFixed(2)}, Y=${localPos.y.toFixed(2)}`);
         
+        // Tính toán tọa độ lưới.
+        // Để chuyển từ tọa độ tâm (0,0) của gameBoardNode về gốc (0,0) ở góc dưới bên trái của lưới,
+        // chúng ta cần cộng thêm một nửa chiều rộng/chiều cao của gameBoardNode.
         const gridX = Math.floor((localPos.x + boardUITransform.width / 2) / this.GRID_CELL_SIZE);
         const gridY = Math.floor((localPos.y + boardUITransform.height / 2) / this.GRID_CELL_SIZE);
         
+        console.log(`[convertWorldToGrid Debug] Converted Grid Pos: X=${gridX}, Y=${gridY}`);
+
         return { gridX, gridY };
     }
     
@@ -287,9 +308,9 @@ export class GameManager extends Component {
         console.log(`[onTouchStart] Touch World Location: X=${touchLocation.x.toFixed(2)}, Y=${touchLocation.y.toFixed(2)}`);
 
         // Lấy tọa độ lưới từ vị trí chạm
-        const { gridX, gridY } = this.convertWorldToGrid(new Vec3(touchLocation.x, touchLocation.y, 0));
+        const { gridX, gridY } = this.convertWorldToGrid(new Vec3(touchLocation.x * 2 , touchLocation.y * 2, 0));
         // console.log cho convertWorldToGrid đã đủ chi tiết rồi.
-
+        console.log(gridX, gridY)
         // Lấy kích thước bảng để kiểm tra giới hạn
         const boardUITransform = this.gameBoardNode.getComponent(UITransform);
         // Debug: Các giá trị của gameBoardNode trong hệ tọa độ thế giới
@@ -617,15 +638,15 @@ export class GameManager extends Component {
                     // { type: 'car', startX: -1, startY: 5, direction: Direction.RIGHT, length: 2 },
                     // { type: 'car', startX: 2, startY: 5, direction: Direction.RIGHT, length: 2 },
                     // { type: 'car', startX: 5, startY: 16, direction: Direction.DOWN, length: 2 },
-                    { type: 'car', startX: -1, startY: 5, direction: Direction.RIGHT, length: 2 },
-                    { type: 'car', startX: 2, startY: 5, direction: Direction.RIGHT, length: 2 },
-                    { type: 'car', startX: 2, startY: 8, direction: Direction.DOWN, length: 2 }, // Xe này đi xuống -> gridY giảm
-                    // { type: 'car', startX: 4, startY: 8, direction: Direction.RIGHT, length: 2 },
-                    // { type: 'car', startX: 7, startY: 8, direction: Direction.RIGHT, length: 2 },
-                    // { type: 'car', startX: 7, startY: 10, direction: Direction.DOWN, length: 2 }, // Xe này đi xuống -> gridY giảm
-                    // // { type: 'truck', startX: 3, startY: 6, direction: Direction.RIGHT, length: 3 }, // Xe mới
-                    // { type: 'car', startX: 5, startY: 1, direction: Direction.UP, length: 2 }, // Xe mới, đi lên -> gridY tăng
-                    // { type: 'car', startX: 8, startY: 5, direction: Direction.LEFT, length: 2 }, // Xe mới, đi trái -> gridX giảm
+                    { type: 'car', startX: 5, startY: 6, direction: Direction.RIGHT, length: 2 },
+                    { type: 'car', startX: 2, startY: 6, direction: Direction.RIGHT, length: 2 },
+                    { type: 'car', startX: 8, startY: 6, direction: Direction.RIGHT, length: 2 }, // Xe này đi xuống -> gridY giảm
+                    { type: 'car', startX: 2, startY: 9, direction: Direction.DOWN, length: 2 }, // Xe này đi xuống -> gridY giảm
+                    { type: 'car', startX: 6, startY: 9, direction: Direction.DOWN, length: 2 }, // Xe này đi xuống -> gridY giảm
+                    { type: 'car', startX: 9, startY: 9, direction: Direction.UP, length: 2 }, // Xe mới, đi lên -> gridY tăng
+                    { type: 'car', startX: 8, startY: 1, direction: Direction.LEFT, length: 2 }, // Xe mới, đi trái -> gridX giảm
+                    { type: 'car', startX: 2, startY: 1, direction: Direction.LEFT, length: 2 }, // Xe mới, đi trái -> gridX giảm
+                    // { type: 'car', startX: 11, startY: 0, direction: Direction.LEFT, length: 2 }, // Xe mới, đi trái -> gridX giảm
                 ],
                 exitPoints: [{x: 5, y: 2, direction: Direction.RIGHT}] // Điểm thoát của xe chính
             },
@@ -656,16 +677,19 @@ export class GameManager extends Component {
         if (this.endLevelMessageLabel) {
             this.endLevelMessageLabel.string = "Level Cleared!";
         }
+        this.unschedule(GameManager.timeCdCallback);
         // You might want to pause game here or load next level
     }
 
     public resetGame() {
         console.log("GameManager: Restarting Current Level!");
-        GameManager.time = 60;
+        GameManager.time = 30;
         this.timeCd();
         this.endLevelMessageLabel.node.active = true;
         this.endLevelPanel.active = false;
-        director.preloadScene("GameScene"); // Reload current scene
+        director.preloadScene("GameScene", function () {
+            console.log('Next scene preloaded');
+        });
     }
 
     public gameOver(): void {
@@ -675,15 +699,17 @@ export class GameManager extends Component {
         this.winNode.active = false;
         this.loseNode.active = true;
         this.endLevelMessageLabel.string = "Game Over, please try again!";
+        input.off(Input.EventType.TOUCH_START, this.onTouchStart, this);
+
     }
     
     public timeCd(): void {
-        GameManager.time = 60;
+        GameManager.time = 30;
         GameManager.timeCdCallback = function () {
             this.timeLabel.string = `${GameManager.time}`;
             if (GameManager.time === 0) {
                 // Cancel this timer at the sixth call-back
-                GameManager.time = 60;
+                GameManager.time = 30;
                 this.unschedule(GameManager.timeCdCallback);
                 this.gameOver();
             }

@@ -20,7 +20,7 @@ export class Vehicle extends Component {
 
     protected onLoad(): void {
         // Tìm GameManager trong Scene
-        this.gameManager = this.node.getParent().getParent().getParent().getComponent(GameManager); 
+        this.gameManager = this.node.getParent().getParent().getComponent(GameManager); 
         console.log(this.gameManager);
         // Giả sử GameManager gắn trên Canvas, và gameBoardNode là con của Canvas, xe là con của gameBoardNode
         // Điều chỉnh lại path nếu cấu trúc hierarchy khác
@@ -72,7 +72,9 @@ export class Vehicle extends Component {
         }
         const boardWidth = boardUITransform.width;
         const boardHeight = boardUITransform.height;
-
+        console.log(`[Vehicle] Initializing ${this.node.name}:`);
+        console.log(`[Vehicle]  - Board Size received (from GameManager): W=${boardWidth.toFixed(2)}, H=${boardHeight.toFixed(2)}`);
+        console.log(`[Vehicle]  - GRID_CELL_SIZE used: ${cellSize}`);
         this.node.setPosition(this.getLocalPositionFromGrid(startX, startY, cellSize, boardWidth, boardHeight));
         this.initialPosition.set(this.node.position);
 
@@ -81,11 +83,18 @@ export class Vehicle extends Component {
 
     // Chuyển đổi tọa độ grid sang tọa độ thế giới (local của parent node)
     public getLocalPositionFromGrid(gridX: number, gridY: number, cellSize: number, boardWidth: number, boardHeight: number): Vec3 {
-        // Tính vị trí cục bộ của tâm ô lưới trong không gian của gameBoardNode.
-        // boardWidth/2 và boardHeight/2 là offset từ tâm gameBoardNode đến góc dưới bên trái của nó.
-        // (cellSize / 2) là offset để đặt tâm xe vào giữa ô lưới.
-        const posX = gridX * cellSize - (boardWidth / 2) + (cellSize / 2);
-        const posY = gridY * cellSize - (boardHeight / 2) + (cellSize / 2);
+         // boardWidth/2 và boardHeight/2: dịch gốc tọa độ từ tâm gameBoardNode về góc dưới bên trái của gameBoardNode.
+        // gridX * cellSize và gridY * cellSize: tính toán vị trí góc dưới bên trái của ô lưới.
+        // + cellSize / 2: dịch vị trí từ góc dưới bên trái của ô lưới đến tâm của ô lưới.
+        
+        // Tính vị trí X cục bộ
+        const posX = (gridX * cellSize) - (boardWidth / 2) + (cellSize / 2);
+        
+        // Tính vị trí Y cục bộ
+        const posY = (gridY * cellSize) - (boardHeight / 2) + (cellSize / 2);
+        
+        console.log(`[getLocalPositionFromGrid] For grid (${gridX}, ${gridY}): Local Position X=${posX.toFixed(2)}, Y=${posY.toFixed(2)}`);
+        
         return new Vec3(posX, posY);
     }
 
